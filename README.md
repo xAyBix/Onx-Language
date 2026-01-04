@@ -57,7 +57,7 @@ start(args) {
 ```js
 start(args) {
     let name = "Akram";
-    print("Hello  {name} !!"); // Output: Hello Akram !!
+    print("Hello {name} !!"); // Output: Hello Akram !!
 }
 ```
 
