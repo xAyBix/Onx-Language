@@ -44,20 +44,20 @@ ___
 
 Every `Onx` program begins execution in the **start** function:
 ```
-start(args[]) {
+$${\color{orange}start}$$(args) {
     // Your code here
 }
 ```
 > [!NOTE]
-> _**args[]** contains command-line arguments_
+> _**args** contains command-line arguments_
 
 > [!WARNING]
 > The **start** function is mandatory
 
 ```
-start(args[]) {
+($${\color{orange}start}$$(args) {
     let name = "Akram";
-    print("Hello {name} !!"); // Output: Hello Akram !!
+    print($${\color{green}"Hello \space  \{name\} \space !!"}$$); // Output: Hello Akram !!
 }
 ```
 
