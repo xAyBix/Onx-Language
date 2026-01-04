@@ -44,7 +44,7 @@ ___
 
 Every `Onx` program begins execution in the **start** function:
 ```
-$${\color{orange}start}$$(args) {
+start(args) {
     // Your code here
 }
 ```
@@ -55,9 +55,9 @@ $${\color{orange}start}$$(args) {
 > The **start** function is mandatory
 
 ```
-($${\color{orange}start}$$(args) {
+start(args) {
     let name = "Akram";
-    print($${\color{green}"Hello \space  \{name\} \space !!"}$$); // Output: Hello Akram !!
+    print("Hello  {name} !!"); // Output: Hello Akram !!
 }
 ```
 
