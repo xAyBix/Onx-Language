@@ -1,7 +1,8 @@
 
+![Logo](/assets/images/Onx.png)
+
 # Onx
 
-![Logo](/assets/images/Onx.png)
 `Onx` (pronounced “Phoenix”) is a compiled language implemented in C, offering both textual and visual block-based programming, with object-oriented and functional support.
 
 `Onx` is designed with a single goal in mind: to be both **highly readable** and **genuinely powerful**. It aims to lower the entry barrier for beginners while still giving experienced developers expressive tools for building complex systems.
@@ -66,12 +67,15 @@ ___
 `Onx` is built around three core principles:
 
 - Readability first
+
         Code should read naturally and be easy to understand.
 
 - Power when needed
+
         Advanced features are available without complicating simple programs.
 
 - Accessibility without limitation
+
         Beginners can start with blocks, professionals can write text — both target the same language.
 
 ### Implementation
@@ -81,5 +85,4 @@ ___
 - Visual block editor acts as an alternative frontend
 
 - Text and block representations share the same underlying structure
-
 
