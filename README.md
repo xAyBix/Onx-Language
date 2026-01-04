@@ -43,7 +43,7 @@ ___
 ### Program Entry Point
 
 Every `Onx` program begins execution in the **start** function:
-```
+```js
 start(args) {
     // Your code here
 }
@@ -54,7 +54,7 @@ start(args) {
 > [!WARNING]
 > The **start** function is mandatory
 
-```
+```js
 start(args) {
     let name = "Akram";
     print("Hello  {name} !!"); // Output: Hello Akram !!
