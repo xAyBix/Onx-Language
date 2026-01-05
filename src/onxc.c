@@ -5,16 +5,21 @@
 
 #define VERSION "0.0.1-SNAPSHOT"
 
+// A function that prints error if arguments less than 2
+void print_less_than_two_error(char *argv);
 // A function that prints Onx logo
 void print_onx();
+// A function that prints help menu
+void print_help();
+// A function that prints version
+void print_version();
 
 int main (int argc, char *argv[]) 
 {
 	// Handling arguments exceptions
 	if (argc < 2) 
 	{
-		printf("\033[38;5;208mOnx>> \x1b[31mError: \x1b[0mExpected \"%s <source file> <target file>\".\n\033[38;5;208mOnx>> \x1b[32mHint: \x1b[0mTry \"%s -h\" to learn more.\n\n",
-			argv[0], argv[0]);
+		print_less_than_two_error(argv[0]);	
 		return 1;
 	}
 
@@ -64,6 +69,14 @@ int main (int argc, char *argv[])
 	return 0;
 
 }
+
+void print_less_than_two_error(char *argv) 
+{
+	printf("\033[38;5;208mOnx>> \x1b[31mError: \x1b[0mExpected \"%s <source file> <target file>\".\n\033[38;5;208mOnx>> \x1b[32mHint: \x1b[0mTry \"%s -h\" to learn more.\n\n",
+			argv, argv);
+
+}
+
 
 
 void print_onx() 
