@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include "commands/help.h"
 
-void print_help(char *program) {
+void print_help(char *program) 
+{
     printf("\033[38;5;208mOnx\x1b[0mCompiler - A compiler for Onx Language\n\n");
     
     printf("USAGE:\n");

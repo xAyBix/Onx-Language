@@ -4,6 +4,7 @@
 #include "commands/commands_manager.h"
 #include "commands/version.h"
 #include "commands/help.h"
+#include "commands/easter_eggs.h"
 
 
 static void print_less_than_two_error(const char *argv0);
@@ -31,12 +32,17 @@ int check_for_command_errors (int argc, char *argv[])
 
 			print_version();	
 
+		}else if (strcmp(argv[1], "--make-me-a-sandwich") == 0)
+		{
+			
+			make_sandwich();
+
 		}else// Invalid
 		{
 
 			print_invalid_option_error(argv);
 			return 1;
-			
+
 		}
 
 		return 0;
@@ -47,6 +53,14 @@ int check_for_command_errors (int argc, char *argv[])
 	{
 		if (strcmp(argv[1], "--compile") == 0 || strcmp(argv[1], "-c") == 0)// Compile
 		{
+			if (argc == 3 && strcmp(argv[2], "hello_world.onx") == 0)
+			{
+				hello_world();
+			}
+			else if (argc == 3 && strcmp(argv[2], "upside_down.onx") == 0)
+			{
+				upside_down();
+			}
 //			compile_handler();
 
 		}else if (strcmp(argv[1], "--build") == 0 || strcmp(argv[1], "-b") == 0)// Build
