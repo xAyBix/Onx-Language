@@ -46,13 +46,12 @@
 
 void make_sandwich(void) 
 {
-    const char *agree = "*SIGH*, making a sandwich...\n";
-
     printf("\033[38;5;208mOnx>> \033[0m");
     fflush(stdout);
     
     if (is_running_as_admin()) 
     {
+        const char *agree = "*SIGH*, making a sandwich...\n";
         int len = strlen(agree);
         for (int i = 0; i < len; i++) 
         {
