@@ -1,33 +1,22 @@
 #ifndef TOKENIZER_H
 #define TOKENIZER_H
 
-typedef enum {
-    // Literals
-    NUMBER, STRING, CHARACTER, NULLTOKEN, TRUE, FALSE,
-    
-    // Keywords
-    STARTFUNC, PRINTFUNC, INPUTFUNC, LET, RETURN, IF, ELSE, WHILE, FOR,
-    
-    // Operators
-    PLUS, MINUS, MULTIPLY, DIVIDE, MODULO, ASSIGN,
-    EQUALS, NOTEQUAL, LESS, GREATER, LESSEQUAL, GREATEREQUAL,
-    NOT, OR, AND,
-    
-    // Delimiters
-    LPARENT, RPARENT, LBRACE, RBRACE, LBRACKET, RBRACKET,
-    COMMA, SEMICOLON, DOT,
-    
-    // Special
-    IDENTIFIER, COMMENT, MULTILINECOMMENT, NEWLINE, WHITESPACE, ENDOFFILE
-}TokenTypes;
-
 typedef struct {
     char *text;
-    TokenTypes token_type;
+    char *type;
     int line;
     int column;
 }Token;
 
-Token** tokenize (const char **contents, int count);
+typedef struct {
+    Token *tokens;
+    size_t count;
+    size_t capacity;
+}TokenList;
+
+void tokenize (const char *content, TokenList *token_list);
+void init_token_list (TokenList *token_list);
+void add_token_to_token_list (TokenList *token_list, const char *text, const char *type, int line, int column);
+void free_token_list (TokenList *token_list);
 
 #endif

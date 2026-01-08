@@ -3,128 +3,197 @@
 #include <string.h>
 #include <stdarg.h>
 #include "tokenizer/tokenizer.h"
+#include "tokenizer/matcher.h"
 
 
-Token** tokenizer (const char **contents, int count);
-static char* patterns_join(const char *separator, int count, ...);
+void tokenize (const char *content, TokenList *token_list);
+void init_token_list (TokenList *token_list);
+void add_token_to_token_list (TokenList *token_list, const char *text, const char *type, int line, int column);
+void free_token_list (TokenList *token_list);
 
 
-Token** tokenizer (const char **contents, int count)
+
+
+void tokenize (const char *content, TokenList *token_list)
 {
-    char *patterns = patterns_join("|", 47, 
-        "(?<NUMBER>\\d+(\\.\\d+)?)", 
-        "(?<STARTFUNC>start(\\s)*?\\(args\\))", 
+    int line_number = 1;
+    int column_number = 1;
+    int i = 0;
+    int len = strlen(content);
+    
+    while (i < len) {
+        int match_len = 0;
+        int extra_lines = 0;
+        char *error = NULL;
+        
+        // Skip whitespace
+        if (content[i] == ' ' || content[i] == '\t' || content[i] == '\r') {
+            if (content[i] == '\t') {
+                column_number += 4;
+            } else {
+                column_number++;
+            }
+            i++;
+            continue;
+        }
+        
+        // Handle newline
+        if (content[i] == '\n') {
+            line_number++;
+            column_number = 1;
+            i++;
+            continue;
+        }
+        // Match multi-line comments (check before single-line comments)
+        if (matchMultiLineComment(&content[i], &match_len, &extra_lines, &error)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "MULTILINE_COMMENT", line_number, column_number);
+            free(text);
+            i += match_len;
+            line_number += extra_lines;
+            if (extra_lines > 0) {
+                // Calculate column after last newline in comment
+                int lastNewline = i - 1;
+                while (lastNewline > 0 && content[lastNewline] != '\n') {
+                    lastNewline--;
+                }
+                column_number = (lastNewline > 0) ? (i - lastNewline) : (column_number + match_len);
+            } else {
+                column_number += match_len;
+            }
+        }
+        // Match single-line comments
+        else if (matchComment(&content[i], &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "COMMENT", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
+        // Match strings
+        else if (matchString(&content[i], &match_len, &extra_lines, &error)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "STRING", line_number, column_number);
+            free(text);
+            i += match_len;
+            line_number += extra_lines;
+            if (extra_lines > 0) {
+                // Calculate column after last newline in string
+                int lastNewline = i - 1;
+                while (lastNewline > 0 && content[lastNewline] != '\n') {
+                    lastNewline--;
+                }
+                column_number = (lastNewline > 0) ? (i - lastNewline) : (column_number + match_len);
+            } else {
+                column_number += match_len;
+            }
+        }
+        // Match keywords
+        else if (matchKeyword(&content[i], "if", &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "KEYWORD", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
+        else if (matchKeyword(&content[i], "else", &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "KEYWORD", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
+        // Match numbers
+        else if (matchNumber(&content[i], &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "NUMBER", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
+        // Match identifiers
+        else if (matchIdentifier(&content[i], &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "IDENTIFIER", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
+        // Match operators and punctuation
+        else if (content[i] == '+') {
+            add_token_to_token_list(token_list, "+", "OPERATOR", line_number, column_number);
+            i++;
+            column_number++;
+        }
+        else if (content[i] == '-') {
+            add_token_to_token_list(token_list, "-", "OPERATOR", line_number, column_number);
+            i++;
+            column_number++;
+        }
+        else if (content[i] == '(') {
+            add_token_to_token_list(token_list, "(", "LPAREN", line_number, column_number);
+            i++;
+            column_number++;
+        }
+        else if (content[i] == ')') {
+            add_token_to_token_list(token_list, ")", "RPAREN", line_number, column_number);
+            i++;
+            column_number++;
+        }
+        else if (content[i] == '{') {
+            add_token_to_token_list(token_list, "{", "LBRACE", line_number, column_number);
+            i++;
+            column_number++;
+        }
+        else if (content[i] == '}') {
+            add_token_to_token_list(token_list, "}", "RPAREN", line_number, column_number);
+            i++;
+            column_number++;
+        }
+        // Unknown character
+        else {
+            printf("\033[38;5;208mOnx>> \x1b[31mError: \x1b[0mUnknown character '%c' at line %d, column %d\n", 
+                    content[i], line_number, column_number);
+            // i++;
+            // column_number++;
+            exit(0);
+        }
 
-        //Comments
-        "(?<COMMENT>//.*?)(?=\r?\n|$)",
-        "(?<MULTILINECOMMENT>/\\*[\\s\\S]*?\\*/)", 
+        if (error) {
+            printf("\033[38;5;208mOnx>> \x1b[31mError: \x1b[0mAt line %d, column %d: %s\n", line_number, column_number, error);
+            exit(1);
+        }
+    }
 
-        "(?<LET>let)",
-        "(?<PRINTFUNC>print)",
-
-        //Conditions statements
-        "(?<IF>if)", 
-        "(?<ELSE>else)",
-        "(?<SWITCH>switch)",
-        "(?<CASE>case)",
-        "(?<DEFAULT>default)",
-
-        //Boolean
-        "(?<TRUE>true)",
-        "(?<FALSE>false)",
-
-        //Loops
-        "(?<FOR>for)", 
-        "(?<WHILE>while)",
-        "(?<DO>do)", 
-        "(?<BREAK>break)", 
-        "(?<CONTINUE>continue)", 
-
-        //Operators
-        "(?<PLUS>\\+)",    
-        "(?<MINUS>-)",     
-        "(?<MULTIPLY>\\*)",
-        "(?<DIVIDE>/)(?!\\*)",    
-        "(?<MODULO>%)",
-        "(?<EQUALS>==)",    
-        "(?<NOTEQUAL>!=)",    
-        "(?<GREATER>>)",     
-        "(?<LESS><)",        
-        "(?<GREATEREQUAL>>=)",    
-        "(?<LESSEQUAL><=)",      
-        "(?<AND>&&)",          
-        "(?<OR>\\|\\|)",       
-        "(?<NOT>!)",
-
-        "(?<RETURN>return)",
-        "(?<NULL>null)",
-        "(?<ASSIGN>=)",
-        "(?<COLON>:)",
-        "(?<COMMA>,)",
-        "(?<STRING>\"[^\"]*\")", 
-        "(?<CHAR>'[^']*')", 
-        "(?<IDENTIFIER>[a-zA-Z_]\\w*)",
-        "(?<LBRACE>\\{)", 
-        "(?<RBRACE>\\})", 
-        "(?<LPAREN>\\()", 
-        "(?<RPAREN>\\))",
-        "(?<NEWLINE>\\n)",
-        "(?<SEMICOLON>;)", 
-        "(?<WHITESPACE>\\s+)");
-
-    return NULL;
 }
 
-
-
-static char* patterns_join(const char *separator, int count, ...)
+void init_token_list (TokenList *token_list)
 {
-    va_list args;
-    va_start(args, count);
-    
-    // Calculate total length
-    size_t sep_len = strlen(separator);
-    size_t total_len = 0;
-    
-    // First pass: calculate length
-    va_list args_copy;
-    va_copy(args_copy, args);
-    for (int i = 0; i < count; i++)
-    {
-        const char *str = va_arg(args_copy, const char*);
-        total_len += strlen(str);
-        if (i < count - 1)
-        {
-            total_len += sep_len;
-        }
-    }
-    va_end(args_copy);
-    
-    // Allocate memory
-    char *result = (char*)malloc(total_len + 1);
-    if (result == NULL)
-    {
-        va_end(args);
-        return NULL;
+    token_list->count=0;
+    token_list->capacity=10;
+    token_list->tokens = malloc(token_list->capacity * sizeof(Token));
+}
+
+void add_token_to_token_list (TokenList *token_list, const char *text, const char *type, int line, int column)
+{
+    if (token_list->count >= token_list->capacity) {
+        token_list->capacity *= 2;
+        token_list->tokens = realloc(token_list->tokens, token_list->capacity * sizeof(Token));
     }
     
-    // Second pass: build string
-    char *ptr = result;
-    for (int i = 0; i < count; i++)
-    {
-        const char *str = va_arg(args, const char*);
-        size_t len = strlen(str);
-        memcpy(ptr, str, len);
-        ptr += len;
-        
-        if (i < count - 1)
-        {
-            memcpy(ptr, separator, sep_len);
-            ptr += sep_len;
-        }
+    token_list->tokens[token_list->count].text = strdup(text);
+    token_list->tokens[token_list->count].type = strdup(type);
+    token_list->tokens[token_list->count].line = line;
+    token_list->tokens[token_list->count].column = column;
+    token_list->count++;
+
+}
+
+void free_token_list (TokenList *token_list)
+{
+    for (size_t i = 0; i < token_list->count; i++) {
+        free(token_list->tokens[i].text);
+        free(token_list->tokens[i].type);
     }
-    *ptr = '\0';
-    
-    va_end(args);
-    return result;
+    free(token_list->tokens);
 }

@@ -68,7 +68,7 @@ int check_for_command_errors (int argc, char *argv[])
 //			build_handler();
 		}else// Invalid
 		{
-			
+			print_invalid_option_error(argv);
 		}
 	}
 	return 0;
