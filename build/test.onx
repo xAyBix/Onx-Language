@@ -1,0 +1,11 @@
+use "onx.maths";
+
+/* This is a multi
+	Lines comment */
+start(args) {
+	let name = "Akram";
+	let age = 21;
+
+	// This is a comment
+	print("Hi, i'm {name} and i'm {age} years old.");
+}

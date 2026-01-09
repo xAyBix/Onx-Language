@@ -89,6 +89,41 @@ void tokenize (const char *content, TokenList *token_list)
             }
         }
         // Match keywords
+        else if (matchKeyword(&content[i], "start", &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "STARTFUNC", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
+        else if (matchKeyword(&content[i], "use", &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "USE", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
+        else if (matchKeyword(&content[i], "print", &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "PRINTFUNC", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
+        else if (matchKeyword(&content[i], "args", &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "KEYWORD", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
+        else if (matchKeyword(&content[i], "let", &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "KEYWORD", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
         else if (matchKeyword(&content[i], "if", &match_len)) {
             char *text = strndup(&content[i], match_len);
             add_token_to_token_list(token_list, text, "KEYWORD", line_number, column_number);
@@ -120,6 +155,81 @@ void tokenize (const char *content, TokenList *token_list)
             column_number += match_len;
         }
         // Match operators and punctuation
+        else if (matchKeyword(&content[i], "===", &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "STRICTEQUALS", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
+        else if (matchKeyword(&content[i], "==", &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "EQUALS", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
+        else if (matchKeyword(&content[i], ">=", &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "GREATEREQUAL", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
+        else if (matchKeyword(&content[i], "<=", &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "LOWEREQUAL", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
+        else if (matchKeyword(&content[i], ">=", &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "GREATEREQUALS", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
+        else if (matchKeyword(&content[i], ">", &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "GREATER", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
+        else if (matchKeyword(&content[i], "<", &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "LOWER", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
+        else if (matchKeyword(&content[i], "||", &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "OR", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
+        else if (matchKeyword(&content[i], "&&", &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "AND", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
+        else if (matchKeyword(&content[i], "=", &match_len)) {
+            char *text = strndup(&content[i], match_len);
+            add_token_to_token_list(token_list, text, "ASSIGNMENT", line_number, column_number);
+            free(text);
+            i += match_len;
+            column_number += match_len;
+        }
+        else if (content[i] == ';') {
+            add_token_to_token_list(token_list, ";", "SEMICOLON", line_number, column_number);
+            i++;
+            column_number++;
+        }
         else if (content[i] == '+') {
             add_token_to_token_list(token_list, "+", "OPERATOR", line_number, column_number);
             i++;

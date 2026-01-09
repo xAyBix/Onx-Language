@@ -16,7 +16,17 @@ int matchMultiLineComment(const char *input, int *length, int *lines, char **err
 int matchKeyword(const char *input, const char *keyword, int *length) 
 {
     *length = strlen(keyword);
-    return strncmp(input, keyword, *length) == 0;
+    
+    if (strncmp(input, keyword, *length) != 0) {
+        return 0;
+    }
+    
+    char next_char = input[*length];
+    if (isalnum(next_char) || next_char == '_') {
+        return 0;  
+    }
+    
+    return 1;
 }
 
 int matchNumber(const char *input, int *length) 

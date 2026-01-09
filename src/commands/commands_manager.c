@@ -5,6 +5,7 @@
 #include "commands/version.h"
 #include "commands/help.h"
 #include "commands/easter_eggs.h"
+#include "orchestration/orchestrator.h"
 
 
 static void print_less_than_two_error(const char *argv0);
@@ -61,7 +62,39 @@ int check_for_command_errors (int argc, char *argv[])
 			{
 				upside_down();
 			}
-//			compile_handler();
+
+			CompilerConfig compiler_config;
+			compiler_config.output_file = NULL;
+			compiler_config.source_files_count = argc-2;
+			// Allocate memory
+    		compiler_config.source_files_paths = malloc(compiler_config.source_files_count * sizeof(char*));
+    		if (compiler_config.source_files_paths == NULL) {
+        		printf("\033[38;5;208mOnx>> \x1b[31mError: \x1b[0mFailed to allocate memory\n");
+        		exit(1);
+    		}
+    
+    		for (int i = 0; i < argc - 2; i++) 
+    		{
+        		compiler_config.source_files_paths[i] = strdup(argv[i + 2]);
+        		if (compiler_config.source_files_paths[i] == NULL) {
+            		printf("\033[38;5;208mOnx>> \x1b[31mError: \x1b[0mStrdup failed for argument %d\n", i);
+            		// Free previously allocated strings
+            		for (int j = 0; j < i; j++) {
+                		free(compiler_config.source_files_paths[j]);
+            		}
+            		free(compiler_config.source_files_paths);
+            		return 1;
+       	 		}
+    		}
+    
+    		compiler_config.compile_only = 1;
+    		compile(&compiler_config);
+    
+    		// Free memory
+    		for (int i = 0; i < compiler_config.source_files_count; i++) {
+        		free(compiler_config.source_files_paths[i]);
+    		}
+    		free(compiler_config.source_files_paths);
 
 		}else if (strcmp(argv[1], "--build") == 0 || strcmp(argv[1], "-b") == 0)// Build
 		{
